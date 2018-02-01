@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (mTimer==null){
                     mTimer=new Timer();
-                    mTimer.schedule(new MyTask(),0,5000);
+                    mTimer.schedule(new MyTask(),0,2000);
                 }
             }
         });
