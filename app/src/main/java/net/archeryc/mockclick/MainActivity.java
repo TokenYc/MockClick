@@ -16,6 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
+ * 参考 http://blog.csdn.net/mad1989/article/details/38109689/
  * @author yc
  */
 public class MainActivity extends AppCompatActivity {
