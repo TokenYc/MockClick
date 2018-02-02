@@ -1,7 +1,5 @@
 package net.archeryc.mockclick;
 
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,24 +12,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 参考 http://blog.csdn.net/mad1989/article/details/38109689/
+ *
  * @author yc
  */
 public class MainActivity extends AppCompatActivity {
 
     private EditText etX;
     private EditText etY;
-    private Button btnSet;
+    private EditText etTime;
     private Button btnTarget;
     private Button btnSingleClick;
     private Button btnLoopClick;
 
-    private String mTargetX;
-    private String mTargetY;
 
-    private Timer mTimer;
+    private ScheduledExecutorService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,33 +39,38 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         etX = findViewById(R.id.et_x);
         etY = findViewById(R.id.et_y);
-        btnSet = findViewById(R.id.btn_set);
         btnTarget = findViewById(R.id.btn_target);
         btnSingleClick = findViewById(R.id.btn_single_click);
         btnLoopClick = findViewById(R.id.btn_loop_click);
+        etTime = findViewById(R.id.et_time);
 
-        btnSet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTargetX = etX.getText().toString();
-                mTargetY = etY.getText().toString();
-            }
-        });
 
         btnSingleClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doClick(mTargetX,mTargetY);
+                String targetX = etX.getText().toString();
+                String targetY = etY.getText().toString();
+                doClick(targetX, targetY);
             }
         });
 
         btnLoopClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mTimer==null){
-                    mTimer=new Timer();
-                    mTimer.schedule(new MyTask(),0,2000);
+                int period;
+                try {
+                    period = Integer.parseInt(etTime.getText().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "请输入数字", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                if (service != null) {
+                    service.shutdown();
+                }
+                service = new ScheduledThreadPoolExecutor(1);
+                service.scheduleAtFixedRate(new MyTask(), 0, period, TimeUnit.MILLISECONDS);
             }
         });
 
@@ -76,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "不要点啦", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
 
@@ -105,20 +109,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class MyTask extends TimerTask{
+    private class MyTask implements Runnable {
 
         @Override
         public void run() {
-            doClick(mTargetX,mTargetY);
+            String targetX = etX.getText().toString();
+            String targetY = etY.getText().toString();
+            doClick(targetX, targetY);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mTimer!=null){
-            mTimer.cancel();
-            mTimer=null;
+        if (service != null) {
+            service.shutdown();
         }
     }
 }
