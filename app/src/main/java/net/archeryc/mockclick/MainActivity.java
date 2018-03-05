@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                             service.shutdown();
                         }
                         service = new ScheduledThreadPoolExecutor(1);
-                        service.scheduleAtFixedRate(new MySwitchTask(), 0, 1000, TimeUnit.MILLISECONDS);
+                        service.scheduleAtFixedRate(new MySwitchTask(), 0, 2000, TimeUnit.MILLISECONDS);
                     }
                 },2000);
             }
@@ -182,15 +182,15 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     doClick("891", "421");
                 }
-            }, 500);
-//            btnSwitch.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    String targetX = etX.getText().toString();
-//                    String targetY = etY.getText().toString();
-//                    doClick(targetX, targetY);
-//                }
-//            }, 2000);
+            }, 800);
+            btnSwitch.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    String targetX = etX.getText().toString();
+                    String targetY = etY.getText().toString();
+                    doClick(targetX, targetY);
+                }
+            }, 1600);
         }
     }
 
